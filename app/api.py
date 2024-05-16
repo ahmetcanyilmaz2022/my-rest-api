@@ -18,5 +18,5 @@ def merge_github_pr(pr_id):
     return jsonify({ "message": f"Pull request {pr_id} merged successfully" })
 
 if __name__ == '__main__':
-    app.run(debug=True, host='ec2-44-201-2-46.compute-1.amazonaws.com', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
