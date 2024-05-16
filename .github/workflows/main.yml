@@ -1,39 +1,25 @@
-name: CI/CD Pipeline
+name: Argo CD Sync
 
 on:
   push:
     branches:
-      - main
+      - main  # Değişiklik yapılan branch
 
 jobs:
-  build:
+  sync-with-argocd:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install Dependencies
+      - name: Setup Argo CD CLI
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x /usr/local/bin/argocd
 
-      - name: Run Tests
-        run: |
-          python -m unittest discover -s tests
+      - name: Login to Argo CD
+        run: argocd login ${{ secrets.ARGO_CD_SERVER }} --username ${{ secrets.ARGO_CD_USERNAME }} --password ${{ secrets.ARGOCDPASS }}
 
-      - name: Build and Deploy with ArgoCD
-        run: |
-          # Your build and deployment commands here
-          # For example:
-            docker build -t my-rest-api .
-          # docker tag my-rest-api:latest your-docker-hub-account/my-rest-api:latest
-          # docker push your-docker-hub-account/my-rest-api:latest
-            argocd app sync my-app-name
-          # Replace my-rest-api with your actual application name, and my-app-name with your ArgoCD application name
-          # Make sure you have configured your Docker registry and ArgoCD properly
+      - name: Sync with Argo CD
+        run: argocd app sync ${{ secrets.ARGO_CD_APPLICATION }}
