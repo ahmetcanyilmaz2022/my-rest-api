@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-rest-api
+spec:
+  destination:
+    namespace: default  # Hedef namespace
+    server: 'https://kubernetes.default.svc'  # Kubernetes cluster'ınızın URL'si
+  project: default
+  source:
+    repoURL: 'https://github.com/ahmetcanyilmaz2022/my-rest-api.git'  # GitHub reposunun URL'si
+    targetRevision: main  # Branch veya tag adı
+    path: app  # Uygulamanın bulunduğu klasör yolu
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
